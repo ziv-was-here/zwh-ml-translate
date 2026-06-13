@@ -1,0 +1,162 @@
+/**
+ * ZWH Multilingual — Admin meta box, post-list badges, translate modal
+ * "The Weathered Chronicle" design system (zivwashere.com)
+ */
+
+#zwh_mlp_translations .inside {
+    background: #fff8f1;
+}
+
+#zwh-mlp-box {
+    font-size: 13px;
+    color: #211b0c;
+}
+
+#zwh-mlp-box select {
+    border: 2px solid #211b0c;
+    border-radius: 0;
+    background: #fff;
+    color: #211b0c;
+    box-shadow: none;
+}
+
+#zwh-mlp-box select:focus {
+    border-color: #aa361d;
+    outline: none;
+    box-shadow: none;
+}
+
+/* Translation table — alternating paper tints, no thin dividers */
+.zwh-mlp-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; border: 2px solid #211b0c; }
+.zwh-mlp-table tr { border-bottom: none; }
+.zwh-mlp-table tr:nth-child(even) { background: #f9edd4; }
+.zwh-mlp-table td { padding: 8px 6px; vertical-align: middle; }
+
+.zwh-mlp-lang-row.is-current { background: #bdddfe !important; }
+
+.zwh-col-lang { width: 46%; }
+.zwh-col-lang strong { display: block; font-size: 12px; line-height: 1.4; }
+.zwh-col-lang small { color: #50453b; font-size: 11px; }
+
+.zwh-rtl-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    background: #daa430; color: #211b0c; border: 2px solid #211b0c;
+    border-radius: 0; padding: 1px 4px; margin-right: 3px; vertical-align: middle;
+    text-transform: uppercase; letter-spacing: .04em;
+}
+
+.zwh-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 0; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em;
+    border: 2px solid #211b0c;
+}
+.zwh-badge-current { background: #42617d; color: #fff; font-style: italic; }
+.zwh-badge-done    { background: #bdddfe; color: #211b0c; }
+.zwh-badge-missing { background: #fff8f1; color: #50453b; border-color: #82756a; }
+
+.zwh-col-actions { white-space: nowrap; text-align: right; }
+.zwh-col-actions .button {
+    font-size: 10px !important; height: 24px !important; line-height: 20px !important;
+    padding: 0 7px !important; min-height: 0 !important; margin-left: 3px !important;
+    border: 2px solid #211b0c !important; border-radius: 0 !important;
+    background: #f9edd4; color: #211b0c; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .02em; box-shadow: none; text-shadow: none;
+}
+.zwh-col-actions .button:hover,
+.zwh-col-actions .button:focus {
+    background: #ede1c9; color: #211b0c; border-color: #211b0c !important;
+}
+.zwh-col-actions .zwh-translate-btn {
+    background: #aa361d !important; color: #fff !important;
+}
+.zwh-col-actions .zwh-translate-btn:hover,
+.zwh-col-actions .zwh-translate-btn:focus {
+    background: #7f1802 !important; color: #fff !important;
+}
+
+#zwh-mlp-status { border-radius: 0; border: 2px solid #211b0c; font-size: 12px; padding: 8px 10px; margin-top: 10px; line-height: 1.5; font-weight: 600; }
+#zwh-mlp-status[hidden] { display: none; }
+.zwh-status-info    { background: #bdddfe; color: #211b0c; }
+.zwh-status-success { background: #bdddfe; color: #211b0c; }
+.zwh-status-error   { background: #ffdad4; border-color: #ba1a1a !important; color: #ba1a1a; }
+
+/* ── Post-list "Translate" row-action modal ─────────────────── */
+#zwh-translate-modal { display: none; }
+#zwh-translate-backdrop {
+    position: fixed; inset: 0; background: rgba(33, 27, 12, .55); z-index: 99998;
+}
+#zwh-translate-dialog {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    z-index: 99999; background: #fff8f1; border: 2px solid #211b0c; border-radius: 0;
+    padding: 24px 28px; width: 380px; max-width: calc(100vw - 40px);
+    box-shadow: 8px 8px 0 #211b0c;
+    color: #211b0c;
+}
+#zwh-translate-dialog h3 {
+    margin: 0 0 6px; font-size: 16px; font-weight: 800; font-style: italic;
+    text-transform: uppercase; letter-spacing: .02em; color: #211b0c;
+}
+#zwh-translate-dialog select {
+    border: 2px solid #211b0c; border-radius: 0; background: #fff; color: #211b0c; box-shadow: none;
+}
+#zwh-translate-dialog .button {
+    border: 2px solid #211b0c !important; border-radius: 0 !important;
+    background: #f9edd4; color: #211b0c; font-weight: 700; font-style: italic;
+    text-transform: uppercase; letter-spacing: .03em; box-shadow: none; text-shadow: none;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+#zwh-translate-dialog .button:hover,
+#zwh-translate-dialog .button:focus {
+    background: #ede1c9; color: #211b0c;
+    transform: translate(-2px,-2px); box-shadow: 3px 3px 0 #211b0c;
+}
+#zwh-translate-dialog .button-primary {
+    background: #aa361d !important; color: #fff !important;
+}
+#zwh-translate-dialog .button-primary:hover,
+#zwh-translate-dialog .button-primary:focus {
+    background: #7f1802 !important; color: #fff !important;
+}
+#zwh-translate-modal-status {
+    border-radius: 0; border: 2px solid #211b0c; font-size: 12px; padding: 8px 10px;
+    margin-bottom: 12px; line-height: 1.5; font-weight: 600;
+}
+#zwh-translate-modal-status[hidden] { display: none; }
+
+/* ── Admin list: per-row translation status badges ──────────── */
+.zwh-trans-row { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
+
+.zwh-tl-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 5px; border-radius: 0; text-decoration: none;
+    white-space: nowrap; letter-spacing: .03em;
+    border: 2px solid #211b0c;
+}
+
+/* Published translation */
+.zwh-tl-badge.zwh-tl-pub {
+    background: #bdddfe; color: #211b0c;
+}
+/* Draft / pending translation */
+.zwh-tl-badge.zwh-tl-draft {
+    background: #daa430; color: #211b0c;
+}
+/* This is the currently-viewed post */
+.zwh-tl-badge.zwh-tl-self {
+    outline: none; background: #42617d; color: #fff; font-style: italic;
+}
+/* No translation exists yet */
+.zwh-tl-badge.zwh-tl-missing {
+    background: #fff8f1; color: #82756a; border: 2px dashed #82756a;
+    cursor: default;
+}
+/* Links get a block-shadow hover */
+a.zwh-tl-badge:hover {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 #211b0c;
+}
+a.zwh-tl-badge {
+    transition: transform .1s ease, box-shadow .1s ease;
+    display: inline-block;
+}
