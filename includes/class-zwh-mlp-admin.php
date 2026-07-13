@@ -356,7 +356,7 @@ class ZWH_MLP_Admin {
 				'post_status' => 'any',
 				'numberposts' => -1,
 				'fields'      => 'ids',
-				'meta_query'  => array( array( 'key' => ZWH_MLP_META_GROUP, 'value' => $group_id ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query'  => array( array( 'key' => ZWH_MLP_META_GROUP, 'value' => $group_id ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- small result set, admin column only. // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			) );
 			foreach ( $group_posts as $pid ) {
 				$l = get_post_meta( $pid, ZWH_MLP_META_LANG, true );
@@ -451,7 +451,7 @@ class ZWH_MLP_Admin {
 				'post_type'   => $post_type,
 				'post_status' => 'any',
 				'numberposts' => -1,
-				'meta_query'  => array( array( 'key' => ZWH_MLP_META_GROUP, 'value' => $group_id ) ),
+				'meta_query'  => array( array( 'key' => ZWH_MLP_META_GROUP, 'value' => $group_id ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- small result set, admin column only.
 			) );
 			foreach ( $group_posts as $p ) {
 				$l = get_post_meta( $p->ID, ZWH_MLP_META_LANG, true ) ?: $default_lang;
@@ -468,13 +468,13 @@ class ZWH_MLP_Admin {
 				$edit_url = get_edit_post_link( $t->ID, 'raw' );
 
 				$css_status = in_array( $status, array( 'publish' ), true ) ? 'pub' : 'draft';
-				$title_attr = esc_attr( ucfirst( $status ) . ( $is_self ? ' — this post' : '' ) );
+				$title_attr = ucfirst( $status ) . ( $is_self ? ' — this post' : '' );
 
 				if ( $is_self ) {
 					printf(
 						'<span class="zwh-tl-badge zwh-tl-self zwh-tl-%s" title="%s">%s</span>',
 						esc_attr( $css_status ),
-						$title_attr,
+						esc_attr( $title_attr ),
 						esc_html( strtoupper( $lang ) )
 					);
 				} else {
@@ -482,7 +482,7 @@ class ZWH_MLP_Admin {
 						'<a href="%s" class="zwh-tl-badge zwh-tl-link zwh-tl-%s" title="%s">%s</a>',
 						esc_url( $edit_url ),
 						esc_attr( $css_status ),
-						$title_attr,
+						esc_attr( $title_attr ),
 						esc_html( strtoupper( $lang ) )
 					);
 				}

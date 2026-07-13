@@ -566,7 +566,9 @@ class ZWH_MLP_Frontend {
 	// -------------------------------------------------------------------
 
 	public function enqueue_frontend() {
-		wp_enqueue_style( 'zwh-mlp-frontend', ZWH_MLP_URL . 'assets/css/frontend.css', array(), ZWH_MLP_VERSION );
+		// Register only — enqueued on demand by render_switcher() so the CSS
+		// loads solely on pages that actually output the language switcher.
+		wp_register_style( 'zwh-mlp-frontend', ZWH_MLP_URL . 'assets/css/frontend.css', array(), ZWH_MLP_VERSION );
 	}
 
 	// -------------------------------------------------------------------
@@ -589,6 +591,8 @@ class ZWH_MLP_Frontend {
 	private function render_switcher( $style = 'inline', $show = 'name' ) {
 		global $post;
 		if ( ! $post ) { return ''; }
+
+		wp_enqueue_style( 'zwh-mlp-frontend' );
 
 		$active_langs = ZWH_MLP_Settings::get_active_langs();
 		$default_lang = ZWH_MLP_Settings::get_default_lang();

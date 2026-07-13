@@ -105,7 +105,7 @@ class ZWH_MLP_Strings {
 		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['zwh_mlp_strings_nonce'] ) ), 'zwh_mlp_save_strings' ) ) { return; }
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
 
-		$rows    = isset( $_POST['zwh_strings'] ) ? (array) wp_unslash( $_POST['zwh_strings'] ) : array();
+		$rows    = isset( $_POST['zwh_strings'] ) ? (array) wp_unslash( $_POST['zwh_strings'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each field sanitized individually below.
 		$langs   = ZWH_MLP_Settings::get_active_langs();
 		$cleaned = array();
 

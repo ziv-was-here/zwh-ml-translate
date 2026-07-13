@@ -1,9 +1,10 @@
 <?php
 /**
  * Plugin Name: ZWH Multilingual Translate
+ * Update URI:  https://github.com/ziv-was-here/zwh-ml-translate
  * Plugin URI:  https://github.com/ziv-was-here/zwh-ml-translate
  * Description: Manage multilingual content with AI/API auto-translation, manual editing, language switcher, and translated URL slugs. Supports DeepL, Google Translate, OpenAI, Claude, and Gemini.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Ziv Rozenberg
  * Author URI:  https://zivwashere.com/
  * License:     GPL-2.0-or-later
@@ -18,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ZWH_MLP_VERSION', '1.0.0' );
+define( 'ZWH_MLP_VERSION', '1.0.1' );
 define( 'ZWH_MLP_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'ZWH_MLP_URL',     plugin_dir_url( __FILE__ ) );
 
@@ -47,3 +48,9 @@ register_deactivation_hook( __FILE__, 'zwh_mlp_deactivate' );
 function zwh_mlp_deactivate() {
 	flush_rewrite_rules();
 }
+
+// ---------------------------------------------------------------------------
+// GitHub update system
+// ---------------------------------------------------------------------------
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-zwh-github-updater.php';
+new ZWH_GitHub_Updater( __FILE__, 'ziv-was-here/zwh-ml-translate' );
