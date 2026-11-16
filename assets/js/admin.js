@@ -95,6 +95,7 @@
             $.post(zwh_mlp.ajaxUrl, {
                 action:      'zwh_mlp_translate_content',
                 nonce:        zwh_mlp.nonce,
+                post_id:      $('#zwh-mlp-box').data('post-id'),
                 source_id:    sourceId,
                 source_lang:  sourceLang,
                 target_lang:  targetLang
@@ -104,20 +105,29 @@
                     var title   = res.data.title;
                     var content = res.data.content;
                     var excerpt = res.data.excerpt;
+                    var saved   = res.data.saved;
+
+                    if (saved) {
+                        // Content saved server-side — reload so the editor shows
+                        // the persisted state and avoids "unsaved changes" warnings.
+                        showStatus('&#10024; Translation saved! Reloading…', 'success');
+                        setTimeout(function () { window.location.reload(); }, 1200);
+                        return;
+                    }
+
+                    // Fallback: apply translation in the editor and ask user to save.
 
                     // ── Block editor (Gutenberg) ──
                     if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                        // Update title
                         wp.data.dispatch('core/editor').editPost({ title: title });
-                        // Update content — parse HTML back into blocks
                         if (wp.blocks && wp.blocks.rawHandler) {
                             var blocks = wp.blocks.rawHandler({ HTML: content });
                             wp.data.dispatch('core/editor').resetBlocks(blocks);
                         }
-                        // Update excerpt if the post supports it
                         if (excerpt) {
                             wp.data.dispatch('core/editor').editPost({ excerpt: excerpt });
                         }
+                        wp.data.dispatch('core/editor').savePost();
 
                     // ── Classic editor (TinyMCE / plain textarea) ──
                     } else {
@@ -130,7 +140,7 @@
                         if (excerpt) { $('#excerpt').val(excerpt); }
                     }
 
-                    showStatus('&#10024; Translation applied! Review and save when ready.', 'success');
+                    showStatus('&#10024; Translation applied! Click <strong>Update</strong> to save.', 'success');
                     $btn.html('&#x2728; Re-translate content');
                     $btn.prop('disabled', false);
                 } else {

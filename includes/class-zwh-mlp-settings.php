@@ -56,6 +56,38 @@ class ZWH_MLP_Settings {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'update_option_' . self::OPTION_KEY, array( $this, 'flush_on_save' ), 10, 2 );
+	}
+
+	/**
+	 * Flush rewrite rules automatically when active languages or default language change.
+	 * Prevents the 404 that happens when a new language is added but the user
+	 * forgets to visit Settings → Permalinks to flush manually.
+	 */
+	public function flush_on_save( $old_value, $new_value ) {
+		$old_langs   = isset( $old_value['active_langs'] ) ? (array) $old_value['active_langs'] : array();
+		$new_langs   = isset( $new_value['active_langs'] ) ? (array) $new_value['active_langs'] : array();
+		$old_default = isset( $old_value['default_lang'] ) ? $old_value['default_lang'] : 'en';
+		$new_default = isset( $new_value['default_lang'] ) ? $new_value['default_lang'] : 'en';
+
+		if ( $old_langs === $new_langs && $old_default === $new_default ) {
+			return;
+		}
+
+		// Re-register rules for the new language set before flushing, because
+		// init (where add_rewrite_rules normally runs) already fired with the
+		// OLD settings value for this request.
+		foreach ( $new_langs as $lang ) {
+			if ( $lang === $new_default ) {
+				continue;
+			}
+			$p = preg_quote( $lang, '#' );
+			add_rewrite_rule( '^' . $p . '/(.+?)(/[0-9]+)?/?$', 'index.php?zwh_lang=' . $lang . '&pagename=$matches[1]&page=$matches[2]', 'top' );
+			add_rewrite_rule( '^' . $p . '/([^/]+)/?$',         'index.php?zwh_lang=' . $lang . '&name=$matches[1]',                       'top' );
+			add_rewrite_rule( '^' . $p . '/?$',                 'index.php?zwh_lang=' . $lang,                                              'top' );
+		}
+
+		flush_rewrite_rules();
 	}
 
 	public function add_menu() {

@@ -570,9 +570,10 @@ class ZWH_MLP_Admin {
 		check_ajax_referer( 'zwh_mlp_action', 'nonce' );
 		if ( ! current_user_can( 'edit_posts' ) ) { wp_send_json_error( 'Permission denied.' ); }
 
-		$source_id   = intval( isset( $_POST['source_id'] )   ? $_POST['source_id']   : 0 );
-		$source_lang = sanitize_text_field( wp_unslash( isset( $_POST['source_lang'] ) ? $_POST['source_lang'] : '' ) );
-		$target_lang = sanitize_text_field( wp_unslash( isset( $_POST['target_lang'] ) ? $_POST['target_lang'] : '' ) );
+		$target_post_id = intval( isset( $_POST['post_id'] )    ? $_POST['post_id']    : 0 );
+		$source_id      = intval( isset( $_POST['source_id'] )  ? $_POST['source_id']  : 0 );
+		$source_lang    = sanitize_text_field( wp_unslash( isset( $_POST['source_lang'] ) ? $_POST['source_lang'] : '' ) );
+		$target_lang    = sanitize_text_field( wp_unslash( isset( $_POST['target_lang'] ) ? $_POST['target_lang'] : '' ) );
 
 		$source = get_post( $source_id );
 		if ( ! $source ) { wp_send_json_error( 'Source post not found.' ); }
@@ -600,11 +601,28 @@ class ZWH_MLP_Admin {
 			if ( ! is_wp_error( $t ) ) { $excerpt = $t; }
 		}
 
+		// Save translated content directly to the target post so it's persisted
+		// even if the user closes the editor without clicking Update.
+		$saved = false;
+		if ( $target_post_id && current_user_can( 'edit_post', $target_post_id ) ) {
+			$update = array(
+				'ID'           => $target_post_id,
+				'post_title'   => $title,
+				'post_content' => $content,
+			);
+			if ( ! empty( $excerpt ) ) {
+				$update['post_excerpt'] = $excerpt;
+			}
+			$result = wp_update_post( $update, true );
+			$saved  = ! is_wp_error( $result );
+		}
+
 		wp_send_json_success(
 			array(
 				'title'   => $title,
 				'content' => $content,
 				'excerpt' => $excerpt,
+				'saved'   => $saved,
 			)
 		);
 	}
