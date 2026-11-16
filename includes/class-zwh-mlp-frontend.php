@@ -38,6 +38,8 @@ class ZWH_MLP_Frontend {
 
 		add_action( 'wp_head',           array( $this, 'output_hreflang' ) );
 		add_filter( 'language_attributes', array( $this, 'add_rtl_attribute' ) );
+		add_filter( 'body_class',          array( $this, 'add_rtl_body_class' ) );
+		add_action( 'wp_head',             array( $this, 'output_rtl_style' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 
 		add_shortcode( 'zwh_language_switcher', array( $this, 'shortcode_switcher' ) );
@@ -417,6 +419,32 @@ class ZWH_MLP_Frontend {
 			return preg_replace( '/dir="[^"]*"/', 'dir="rtl"', $output );
 		}
 		return $output . ' dir="rtl"';
+	}
+
+	/**
+	 * Add 'rtl' and 'zwh-rtl' classes to <body> when the current language is RTL.
+	 * Many themes override direction on body directly, so the <html dir="rtl">
+	 * attribute alone is not enough — a body class lets theme CSS and plugins react.
+	 *
+	 * @param array $classes Existing body classes.
+	 * @return array
+	 */
+	public function add_rtl_body_class( $classes ) {
+		if ( ZWH_MLP_Settings::is_rtl( self::get_current_lang() ) ) {
+			$classes[] = 'rtl';
+			$classes[] = 'zwh-rtl';
+		}
+		return $classes;
+	}
+
+	/**
+	 * Output a minimal <style> in <head> that enforces RTL direction and alignment
+	 * on the body when the current language is RTL. Using high-specificity selectors
+	 * ensures the rule overrides most theme stylesheets without !important abuse.
+	 */
+	public function output_rtl_style() {
+		if ( ! ZWH_MLP_Settings::is_rtl( self::get_current_lang() ) ) { return; }
+		echo '<style id="zwh-rtl-style">body.zwh-rtl,body.zwh-rtl *{direction:rtl;unicode-bidi:embed;}body.zwh-rtl{text-align:right;}</style>' . "\n";
 	}
 
 	// -------------------------------------------------------------------
