@@ -27,6 +27,10 @@ class ZWH_MLP_Admin {
 		add_action( 'wp_ajax_zwh_mlp_create_translation',   array( $this, 'ajax_create_translation' ) );
 		add_action( 'wp_ajax_zwh_mlp_translate_content',    array( $this, 'ajax_translate_content' ) );
 		add_action( 'init', array( $this, 'register_columns' ) );
+
+		// RTL editor support
+		add_filter( 'tiny_mce_before_init',      array( $this, 'rtl_classic_editor' ) );
+		add_filter( 'block_editor_settings_all', array( $this, 'rtl_block_editor' ), 10, 2 );
 	}
 
 	public function register_columns() {
@@ -229,6 +233,60 @@ class ZWH_MLP_Admin {
 			</p>
 		</div>
 		<?php
+	}
+
+	// -------------------------------------------------------------------
+	// RTL editor support
+	// -------------------------------------------------------------------
+
+	/**
+	 * Returns true when the post currently open in the editor is in an RTL language.
+	 */
+	private function current_post_is_rtl() {
+		$post_id = isset( $_GET['post'] ) ? intval( $_GET['post'] ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		           ( isset( $_POST['post_ID'] ) ? intval( $_POST['post_ID'] ) : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( ! $post_id ) { return false; }
+		$lang = get_post_meta( $post_id, ZWH_MLP_META_LANG, true );
+		return $lang && ZWH_MLP_Settings::is_rtl( $lang );
+	}
+
+	/**
+	 * Classic editor (TinyMCE): set directionality to RTL.
+	 *
+	 * @param array $init TinyMCE init settings.
+	 * @return array
+	 */
+	public function rtl_classic_editor( $init ) {
+		if ( $this->current_post_is_rtl() ) {
+			$init['directionality'] = 'rtl';
+			$init['rtl_ui']         = true;
+		}
+		return $init;
+	}
+
+	/**
+	 * Block editor (Gutenberg): inject an editor style that sets the canvas to RTL.
+	 *
+	 * @param array                   $settings Block editor settings.
+	 * @param WP_Block_Editor_Context $context  Editor context.
+	 * @return array
+	 */
+	public function rtl_block_editor( $settings, $context ) {
+		if ( ! isset( $context->post ) ) { return $settings; }
+
+		$lang = get_post_meta( $context->post->ID, ZWH_MLP_META_LANG, true );
+		if ( ! $lang || ! ZWH_MLP_Settings::is_rtl( $lang ) ) { return $settings; }
+
+		// Append inline CSS as an editor style so it applies inside the canvas iframe.
+		$css = '.editor-styles-wrapper,.block-editor-writing-flow{direction:rtl!important;text-align:right!important;}'
+			. '.wp-block-post-title,.editor-post-title__input{direction:rtl!important;text-align:right!important;unicode-bidi:embed;}';
+
+		if ( ! isset( $settings['styles'] ) || ! is_array( $settings['styles'] ) ) {
+			$settings['styles'] = array();
+		}
+		$settings['styles'][] = array( 'css' => $css );
+
+		return $settings;
 	}
 
 	// -------------------------------------------------------------------
